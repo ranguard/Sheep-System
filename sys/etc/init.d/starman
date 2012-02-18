@@ -17,7 +17,7 @@
 source /vhosts/perl5/perlbrew/etc/bashrc
 
 # psgi defaults
-APPDIR="/vhosts"
+APPDIR="/vhosts/sheep_lib"
 PSGIAPP="$APPDIR/app.psgi"
 
 # starman defaults
