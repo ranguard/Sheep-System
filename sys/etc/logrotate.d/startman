@@ -1,0 +1,34 @@
+/vhosts/logs/*/*.log {
+     daily
+     rotate 52
+     missingok
+     delaycompress
+     notifempty
+     create 640 web vhosts
+     sharedscripts
+     postrotate
+     LOGFOLDER="/vhosts/logs"
+     HOSTNAME=`/bin/hostname`
+     EXT=`/bin/date -d yesterday +%F`
+         if [ -f /tmp/starman_app.pid ]; then \
+           if [ -x /usr/sbin/invoke-rc.d ]; then \
+             /usr/sbin/invoke-rc.d starman reload > /dev/null; \
+           else \
+             /etc/init.d/starment reload > /dev/null; \
+           fi; \
+         fi;
+         for folder in `find /vhosts/logs/`
+         do
+             if [ -d $folder ]; then
+                 logfile=$folder/access.log;
+                 echo $logfile;
+                 if [ -f $logfile.1 ]; then
+                     mv $logfile.1 $logfile.$HOSTNAME.$EXT;
+                     /usr/bin/nice -20 /bin/bzip2 -f $logfile.$HOSTNAME.$EXT
+                     chown web.web $logfile.$HOSTNAME.$EXT.bz
+                     chmod 666 $logfile.$HOSTNAME.$EXT.bz2
+                 fi;
+             fi;
+         done
+     endscript
+}

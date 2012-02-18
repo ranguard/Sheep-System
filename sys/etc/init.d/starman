@@ -12,6 +12,10 @@
 # Description:          Starman is an excellent daemon for running plack applications.
 #                       Speaks PSGI to your catalyst application
 #                       It will also refuse to restart your application if it does not compile
+# Required-Start:    
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
 ### END INIT INFO
 
 source /vhosts/perl5/perlbrew/etc/bashrc
