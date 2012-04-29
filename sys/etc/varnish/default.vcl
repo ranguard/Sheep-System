@@ -8,6 +8,32 @@ backend default {
     .host = "127.0.0.1";
     .port = "5000";
 }
+
+backend laurie {
+    .host = "127.0.0.1";
+    .port = "5001";
+}
+
+director default_director round-robin {
+  { .backend = default; }
+}
+
+director laurie_director round-robin {
+  { .backend = laurie; }
+}
+
+sub vcl_recv {
+	if( req.http.host ~ "laurielapworth" ) {
+		set req.backend = laurie_director;
+        } else {
+		set req.backend = default_director;
+        }
+}
+
+
+#
+
+
 # 
 # Below is a commented-out copy of the default VCL logic.  If you
 # redefine any of these subroutines, the built-in logic will be
