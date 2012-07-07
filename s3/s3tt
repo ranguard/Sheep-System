@@ -1,0 +1,199 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use File::Find::Rule;
+use Cwd;
+use Getopt::Long;
+use Path::Class;
+use File::Slurp;
+use MIME::Types qw(by_suffix);
+use Digest::MD5 qw(md5_hex);
+use Net::Amazon::S3;
+use Template;    # actually just to make sure installed for ttree cmd
+use Term::ProgressBar::Simple;
+
+my $s3; # For later
+
+my $generate = 0;
+my $upload   = 0;
+my $domain;
+
+my $result = GetOptions(
+    "domain=s" => \$domain,
+    "u"        => \$upload,
+);
+
+unless ($domain) {
+    print "Usage: s3tt -u -d <domain>\n";
+    print " -d : domain name, same as bucket name\n";
+    print " -u : upload to s3 (otherwise just generates)\n";
+    exit;
+}
+
+my $dir = getcwd();
+die "Missing a $dir/root directory" unless -d "$dir/root";
+
+# Always generate
+{
+    my $ttrc = '/tmp/s3tt_ttrc';
+    write_file( $ttrc, ttrc_content() );
+
+    # Run ttree
+    my $cmd = "ttree -a --src='root' -f $ttrc";
+    `$cmd`;
+}
+
+if ( !$upload ) {
+    write_file( 'app.psgi', app_psgi_content() );
+
+    print "Generated to htdocs, app.psgi written\n";
+    print "To preview run: plackup\n";
+} else {
+    # Upload
+    sync_up();
+}
+
+
+sub ttrc_content {
+    return <<'EOF'
+# Created by s3tt    
+ignore = \.svn
+ignore = ^#
+ignore = ~$
+ignore = .DS_Store
+ignore = \.tt$
+ignore = \.swp$
+ignore = ^\.git
+
+copy = \.(gif|png|pdf|jpg|js|pdf)$
+
+recurse
+
+dest = htdocs
+EOF
+}
+
+sub app_psgi_content {
+    return <<'AEOF'
+# Created by s3tt
+# app.psgi for prereviewing the generated content
+
+use Plack::Builder;
+use Plack::App::File;
+use Plack::Middleware::DirIndex;
+
+my $app = Plack::App::File->new({ root => './htdocs/' })->to_app;
+
+builder {
+      enable "Plack::Middleware::DirIndex", dir_index => 'index.html';
+      $app;
+}
+AEOF
+}
+
+
+sub sync_up {
+
+    my $source = 'htdocs';
+    my $prefix = ''; # we want at the top level of the bucket
+    my $acl_short = 'public-read';
+    
+    die "Can not read directory: $source" unless -d $source;
+
+    # Work out our local files
+    my @files = File::Find::Rule->file()->in( ($source) );
+    my $progress = Term::ProgressBar::Simple->new( scalar(@files) );
+
+    my $bucket = _get_bucket();
+
+    # Get a list of all the remote files
+    my $remote_file_list = $bucket->list_all( )
+        or die $s3->err . ": " . $s3->errstr;
+
+    # Now hash, so we can look up a specific key to find the etag
+    my %remote_files;
+    foreach my $key_meta ( @{ $remote_file_list->{keys} } ) {
+        my $key = $key_meta->{key};
+        $remote_files{$key} = $key_meta;
+    }
+
+    my $dir        = dir($source);
+    my $dir_string = $dir->stringify;
+
+    my $mimetypes = MIME::Types->new;
+
+    foreach my $f (@files) {
+        my $file = file($f);
+        my ( $mediatype, $encoding ) = by_suffix $file->basename();
+
+        # Assume plain text unless we can work i
+        unless ($mediatype) {
+            if ( -T $file ) {
+                $mediatype = 'text/plain';
+            } else {
+                $progress++;
+                $progress->message("$f - NOT uploading");
+                warn "Not uploading: $file";
+                warn "Unknown mime type, submit patch to MIME::Types";
+                next;
+            }
+        }
+
+        my $content = $file->slurp();
+        my $md5     = md5_hex($content);
+
+        my $key = $file->stringify;
+        $key =~ s/$dir_string//;    # remove our local path for the dir
+        $key =~ s{^/}{};            # remove the trailing slash
+        $key = "$prefix$key";       # Add the prefix if there is one
+
+        if ( my $remote = $remote_files{$key} ) {
+            if ( $remote->{etag} eq $md5 ) {
+                $progress->message("$key - $mediatype - not changed");
+                next;
+            }
+        }
+
+        $bucket->add_key_filename( $key, $f, { content_type => $mediatype, },
+        ) or die $s3->err . ": " . $s3->errstr;
+
+        if ($acl_short) {
+
+            $bucket->set_acl(
+                {   key       => $key,
+                    acl_short => $acl_short,
+                }
+            ) || die $s3->err . ": " . $s3->errstr;
+        }
+        $progress->message("$key - $mediatype - uploaded");
+
+        $progress++;
+
+    }
+}
+
+sub _get_bucket {
+    $s3 ||= _init_s3();
+    my $bucket = $s3->bucket( $domain );
+    die $s3->err . ": " . $s3->errstr if $s3->err;
+    return $bucket;
+}
+
+sub _init_s3 {
+
+    my $aws_access_key_id     = $ENV{'AWS_ACCESS_KEY_ID'};
+    my $aws_secret_access_key = $ENV{'AWS_ACCESS_KEY_SECRET'};
+
+    die "Set AWS_ACCESS_KEY_ID ENV" unless $aws_access_key_id;
+    die "set AWS_ACCESS_KEY_SECRET" unless $aws_secret_access_key;
+
+    return Net::Amazon::S3->new(
+        {   aws_access_key_id     => $aws_access_key_id,
+            aws_secret_access_key => $aws_secret_access_key,
+            retry                 => 1,
+        }
+    );
+}
+
