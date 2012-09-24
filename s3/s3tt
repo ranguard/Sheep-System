@@ -67,7 +67,7 @@ ignore = \.tt$
 ignore = \.swp$
 ignore = ^\.git
 
-copy = \.(gif|png|pdf|jpg|js|pdf)$
+copy = \.(gif|png|pdf|jpg|js|pdf|mp3|m4a)$
 
 recurse
 
