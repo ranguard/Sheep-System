@@ -67,7 +67,7 @@ ignore = \.tt$
 ignore = \.swp$
 ignore = ^\.git
 
-copy = \.(gif|png|pdf|jpg|js|pdf|mp3|m4a)$
+copy = \.(gif|png|pdf|jpg|js|pdf|mp3|m4a|m4v)$
 
 recurse
 
@@ -130,7 +130,9 @@ sub sync_up {
 
         # Assume plain text unless we can work i
         unless ($mediatype) {
-            if ( -T $file ) {
+	    if($file->basename =~ /m4v$/) {
+	$mediatype = 'video/x-m4v';
+           } elsif ( -T $file ) {
                 $mediatype = 'text/plain';
             } else {
                 $progress++;
