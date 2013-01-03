@@ -1,0 +1,21 @@
+# /etc/aliases (managed by puppet)
+
+root:	leo@cuckoo.org
+
+# Basic system aliases that MUST be present.
+postmaster:	root
+mailer-daemon:	postmaster
+
+# amavis
+virusalert:	root
+
+nobody: root
+hostmaster: root
+usenet: root
+news: root
+webmaster: root
+www: root
+ftp: root
+abuse: root
+noc: root
+security: root
