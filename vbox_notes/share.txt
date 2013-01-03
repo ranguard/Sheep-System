@@ -1,0 +1,3 @@
+Setup share in disk
+
+mount -t vboxsf <name> <mount_point>
