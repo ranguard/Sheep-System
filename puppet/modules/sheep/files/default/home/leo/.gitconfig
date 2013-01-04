@@ -1,0 +1,14 @@
+[user]
+	name = Leo Lapworth
+	email = "leo@cuckoo.org"
+[alias]
+        ci = commit
+        cia = commit -a
+        st = status
+        di = diff
+        tree = log --pretty=oneline --topo-order --graph --abbrev-commit --decorate
+        br = branch -a
+        co = checkout
+        mrg = merge --no-ff
+[core]
+        excludesfile = "/home/leo/.gitexcludes"

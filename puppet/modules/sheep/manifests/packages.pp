@@ -44,7 +44,6 @@ class sheep::packages {
     package { libncurses5: ensure => latest }
 
     package { 'libpng12-0': ensure => latest }
-    package { 'libssl-dev': ensure => latest }
     package { libxml2: ensure => latest }
     package { 'libxml2-utils': ensure => latest }
     package { memcached: ensure => latest }

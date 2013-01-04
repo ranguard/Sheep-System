@@ -1,5 +1,14 @@
+Puppet for ranguard
+===================
 
+How to use it
+-------------
 
-apt-get install -y puppet git libpath-class-perl
-git clone https://github.com/ranguard/Sheep-System.git /tmp/puppet
-puppet apply --modulepath=/tmp/puppet/puppet/modules/ /tmp/puppet/puppet/manifests/site.pp --verbose
+    sudo apt-get install -y puppet git libpath-class-perl
+    
+    mkdir /home/leo/git
+    cd /home/leo/git
+    git clone https://github.com/ranguard/Sheep-System.git ./sheep
+    
+    sudo puppet apply --modulepath=/home/leo/git/sheep/puppet/modules/ /home/leo/git/sheep/puppet/manifests/site.pp --verbose
+    

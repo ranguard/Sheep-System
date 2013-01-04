@@ -52,7 +52,30 @@ define sheep::user(
                     "puppet:///modules/sheep/default/$path/$user/bin",
                     "puppet:///modules/sheep/default/$path/default/bin",
             ];
-    }
+    }->
+
+    file {
+        # .gitconfig
+        "$path/$user/.gitconfig":
+            require => User[$user],
+            owner   => $user,
+            group   => $user,
+            mode    => '0600', # make everything executible
+            source  => [
+                    "puppet:///modules/sheep/default/$path/$user/.gitconfig",
+            ];
+    }->
+    file {
+        # .gitexclude
+        "$path/$user/.gitexclude":
+            require => User[$user],
+            owner   => $user,
+            group   => $user,
+            mode    => '0600', # make everything executible
+            source  => [
+                    "puppet:///modules/sheep/default/$path/$user/.gitexclude",
+            ];
+    }->
 
     # Sort out ssh file, need dir first
     file{ "$path/$user/.ssh":
