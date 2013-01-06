@@ -9,7 +9,7 @@ class perlbrew {
     $jobs = $processorcount * 2 + 1
     exec {
       "perlbrew_build_${name}":
-        command => "/bin/sh -c 'umask 022; /usr/bin/env PERLBREW_ROOT=${perlbrew::params::perlbrew_root} ${perlbrew::params::perlbrew_bin} install ${version} --as ${name} -j ${jobs} -Accflags=-fPIC -Dcccdlflags=-fPIC'",
+        command => "/bin/sh -c 'umask 022; /usr/bin/env PERLBREW_ROOT=${perlbrew::params::perlbrew_root} ${perlbrew::params::perlbrew_bin} install ${version} --as ${name} -j ${jobs} --notest -Accflags=-fPIC -Dcccdlflags=-fPIC'",
         user    => "perlbrew",
         group   => "perlbrew",
         timeout => 3600,
