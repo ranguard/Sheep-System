@@ -2,6 +2,8 @@ class sheep::configs {
     # Aliases
     file { "/etc/aliases":
             source => "puppet:///modules/sheep/default/etc/aliases",
+            owner => 'root',
+            group => 'root'
     }
     # resolv
     # file { "/etc/resolv.conf":
@@ -11,6 +13,8 @@ class sheep::configs {
     package { apticron: ensure => present }->
     file { "/etc/apticron/apticron.conf":
             source => "puppet:///modules/sheep/default/etc/apticron/apticron.conf",
+            owner => 'root',
+            group => 'root'
     }
 
     # # make logrotate use dateext for all logs
