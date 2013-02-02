@@ -29,7 +29,7 @@ PORT=<%= port %>
 PIDDIR=/var/run/startserver
 PIDFILE=$PIDDIR/${NAME}.pid
 STATUSFILE=$PIDDIR/${NAME}.status
-USER=metacpan
+USER=www-data
 GROUP=users
 
 test -f ${SERVER} || exit 0

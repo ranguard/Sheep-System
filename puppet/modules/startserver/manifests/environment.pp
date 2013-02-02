@@ -1,7 +1,7 @@
 class startserver::environment {
     include perlbrew
     perlbrew::install_module { ["Net::Server::SS::PreFork", "Server::Starter", "Starman"]:
-        perl => $metacpan::perl,
+        perl => $sheep::perl,
     }
 
     file { "/var/run/startserver":
