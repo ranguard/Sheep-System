@@ -1,11 +1,12 @@
 node default {
     # include perlbrew here to make sheep::perl work
     include perlbrew
-
-    include sheep    
+    $perlbin = "/usr/local/perlbrew/perls/perl-5.16.2/bin"
+    $perl = "perl-5.16.2"
+        
+    include sheep
     include sheep::ssh
 
-    $perl = "perl-5.16.2"
     sheep::perl {  $perl: }
     
     # include sheep::exim
