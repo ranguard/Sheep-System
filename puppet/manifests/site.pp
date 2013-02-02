@@ -13,4 +13,7 @@ node default {
     include sheep::configs
     include sheep::packages    
     include sheep::user::admins
+    
+    include sheep::web::laurielapworth
+    include sheep::web::imageeasel
 }
