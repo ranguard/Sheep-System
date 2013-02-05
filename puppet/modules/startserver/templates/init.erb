@@ -36,6 +36,9 @@ test -f ${SERVER} || exit 0
 
 . /lib/lsb/init-functions
 
+# So Catalyst apps can be lazy
+cd ${APPDIR}
+
 if [ ! $WORKERS ]; then
     echo "\$WORKERS is not defined"
     exit 1
