@@ -1,4 +1,3 @@
-rewrite ^(<%= @location %>)$ $1/ permanent;
 
   location <%= @location %>/ {
     proxy_pass <%= @target %>;
