@@ -51,7 +51,9 @@ define sheep::perl(
         "Net::Amazon::S3"                              ,
         "Net::FTP"                                     ,
         "SimpleDB::Class"                              ,
-        "Test::More"                                   
+        "Test::More"                                   ,
+        "File::Slurp",
+        "IPC::Run",
     ]:
         perl => $sheep::perl,
     }
