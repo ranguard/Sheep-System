@@ -31,7 +31,7 @@ PIDFILE=$PIDDIR/${NAME}.pid
 STATUSFILE=$PIDDIR/${NAME}.status
 USER=<%= user %>
 GROUP=users
-LOGDIR=/var/log/www/<%= filenam %>
+LOGDIR=/var/log/starman/<%= filename %>
 
 test -f ${SERVER} || exit 0
 

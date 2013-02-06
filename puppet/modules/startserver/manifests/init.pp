@@ -16,10 +16,16 @@ define startserver(
     }
     
     # Some where for log files
-    file { "/var/log/www/$filename":
+    file { "/var/log/starman/":
         ensure => directory,
         owner => $user,
-        group => $user
+        group => $user,
+        mode => 0755,
+    }->
+    file { "/var/log/starman/$filename":
+        ensure => directory,
+        owner => $user,
+        group => $user,
         mode => 0755,
     }
 }
