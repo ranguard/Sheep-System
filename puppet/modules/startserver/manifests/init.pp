@@ -5,6 +5,7 @@ define startserver(
 	$root,
 	$workers = 5,
 	$port = 5000,
+	$user = 'www-data',
 ) {
     include startserver::environment
 
@@ -12,5 +13,13 @@ define startserver(
         ensure => file,
         mode   => 0755,
         content => template("startserver/init.erb"),
+    }
+    
+    # Some where for log files
+    file { "/var/log/www/$filename":
+        ensure => directory,
+        owner => $user,
+        group => $user
+        mode => 0755,
     }
 }

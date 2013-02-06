@@ -29,8 +29,9 @@ PORT=<%= port %>
 PIDDIR=/var/run/startserver
 PIDFILE=$PIDDIR/${NAME}.pid
 STATUSFILE=$PIDDIR/${NAME}.status
-USER=www-data
+USER=<%= user %>
 GROUP=users
+LOGDIR=/var/log/www/<%= filenam %>
 
 test -f ${SERVER} || exit 0
 
@@ -54,7 +55,8 @@ if [ ! -d $APPDIR ]; then
     exit 1
 fi
 
-STARMAN="$DAEMON -- --port=$PORT --pid-file=$PIDFILE --status-file=$STATUSFILE --signal-on-hup=QUIT  --signal-on-term=QUIT -- $SERVER --workers $WORKERS --preload-app $PSGIAPP"
+STARMAN="$DAEMON -- --port=$PORT --pid-file=$PIDFILE --status-file=$STATUSFILE --signal-on-hup=QUIT  --signal-on-term=QUIT -- $SERVER --error-log=$LOGDIR/error.log --access-log=$LOGDIR/access.log
+--workers $WORKERS --preload-app $PSGIAPP"
 
 check_running() {
     [ -s $PIDFILE ] && kill -0 $(cat $PIDFILE) >/dev/null 2>&1
