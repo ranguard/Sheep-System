@@ -2,6 +2,7 @@ class sheep::web::imageeasel {
 	nginx::vhost { "imageeasel.com":
 		bare     => true,
 		aliases => ["www.imageeasel.com", "$hostname.imageeasel.com"],
+		client_max_body_size => '10',
 	}
 
 	nginx::proxy { "imageeasel.com":

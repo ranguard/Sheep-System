@@ -20,6 +20,9 @@ server {
   gzip_disable     "MSIE [1-6]\.";
   gzip_comp_level  4;
 
+  <% if @client_max_body_size %>
+  client_max_body_size <%= @client_max_body_size %>M
+  <% end %>
   <% unless @bare %>
   location / {
     index index.html index.htm index.php;
