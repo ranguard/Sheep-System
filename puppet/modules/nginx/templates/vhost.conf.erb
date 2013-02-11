@@ -19,10 +19,11 @@ server {
   gzip_types       text/plain application/xml application/json application/javascript text/css image/svg+xml application/x-javascript;
   gzip_disable     "MSIE [1-6]\.";
   gzip_comp_level  4;
-
+  
   <% if @client_max_body_size %>
-  client_max_body_size <%= @client_max_body_size %>M
+  client_max_body_size <%= @client_max_body_size %>M;
   <% end %>
+  
   <% unless @bare %>
   location / {
     index index.html index.htm index.php;
@@ -53,6 +54,10 @@ server {
   gzip_types       text/plain application/xml application/json application/javascript text/css image/svg+xml application/x-javascript;
   gzip_disable     "MSIE [1-6]\.";
   gzip_comp_level  4;
+
+  <% if @client_max_body_size %>
+  client_max_body_size <%= @client_max_body_size %>M;
+  <% end %>
 
   <% if @ssl %>
   ssl on;
