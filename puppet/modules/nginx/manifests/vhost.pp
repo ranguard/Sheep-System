@@ -6,7 +6,7 @@ define nginx::vhost(
         $php = false,
         $bare = false,
 	    $aliases = "",
-	    $client_max_body_size,
+	    $client_max_body_size = "1",
 ) {
         include nginx
         if $html {
