@@ -1,6 +1,10 @@
 Puppet for ranguard
 ===================
 
+#TODO:
+- bashrc
+- cpanm alias to sudo su - perlbrew
+
 Setup
 ------
 
